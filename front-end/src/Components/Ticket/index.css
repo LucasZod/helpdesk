@@ -1,0 +1,81 @@
+.container-ticket {
+    display: grid;
+    grid-template-rows:  5vh, 70vh;
+    grid-template-areas: "header"  
+                         "nav";
+    border: 1px solid #ccc;
+  }
+
+.mainHeader{
+      grid-area:header;
+      background-color: black;
+}
+
+.mainHeader div{
+  display: flex;
+}
+
+.mainHeader p {
+    color: white;
+    margin-right: 10px;
+}
+
+
+.mainNav{
+    grid-area:nav;
+    display: grid;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.mainNav .form{
+  width: auto;
+}
+
+.input-ticket{
+    width: 100%;
+    margin-top: 4px; 
+    border: 1px solid #b2b2b2;
+   
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+   
+    -webkit-box-shadow: 0px 1px 4px 0px rgba(168, 168, 168, 0.6) inset;
+    box-shadow: 0px 1px 4px 0px rgba(168, 168, 168, 0.6) inset;
+   
+    -webkit-transition: all 0.2s linear;
+    transition: all 0.2s linear;
+  }
+  .textarea-ticket{
+    width: 100%;
+    margin-top: 4px;
+   
+    border: 1px solid #b2b2b2;
+   
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+   
+    -webkit-box-shadow: 0px 1px 4px 0px rgba(168, 168, 168, 0.6) inset;
+    box-shadow: 0px 1px 4px 0px rgba(168, 168, 168, 0.6) inset;
+   
+    -webkit-transition: all 0.2s linear;
+    transition: all 0.2s linear;
+  }
+
+  .botao-ticket{
+    width: 100%;
+    cursor: pointer;  
+    background: rgb(120, 139, 143);
+    padding: 8px 5px;
+    color: #fff;
+    font-size: 20px;  
+    border: 1px solid #fff;   
+    margin-bottom: 10px;
+    margin-top: 10px;
+    text-shadow: 0 1px 1px #333;
+   
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+   
+    transition: all 0.2s linear;
+  }

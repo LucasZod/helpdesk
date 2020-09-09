@@ -1,0 +1,20 @@
+.container{
+    display: grid;
+    grid-template-areas: 'form aside';
+    grid-template-rows: 70.55vh;
+}
+
+.formGroup{
+    display: flex;
+    grid-area:form;
+    width: 80%;
+    margin-left: 10%;
+
+
+}
+
+.formAside{
+    grid-area:aside;
+    margin-left: 2%;
+    border: 1px solid #ccc;
+}

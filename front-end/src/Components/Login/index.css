@@ -1,0 +1,28 @@
+.container-login{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 80vh;
+    grid-template-areas: 'form aside';
+    grid-gap: 9px;;
+    justify-content: center;
+}
+
+.form-items{
+    grid-area: form;
+    display: grid;
+    justify-items: end;
+    align-items: center;
+}
+
+.form-items > form{
+    display: grid;
+    width: 300px;
+}
+
+
+.aside-items{
+    grid-area: aside;
+    display: grid;
+    justify-items: start;
+    align-items: center;
+}

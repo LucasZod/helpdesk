@@ -1,0 +1,32 @@
+.container-botao{
+	margin: 0 auto;
+	display: flex;
+    border: 1px solid #ccc;
+    background: whitesmoke;
+    margin-bottom: 10px;
+}
+
+.all-buttons{
+    padding: 5px;
+	background: whitesmoke;
+	text-align: center;
+    font-size: 2em;
+    
+}
+
+.botao-div{
+    display: grid;
+    justify-items: center;
+    margin-left: 8px;
+    border: 1px solid #ccc;
+    width: 150px;
+    margin: 9px;
+}
+.botao-div > p{
+    text-decoration: none;
+}
+
+.botao-div-oculto{
+    display: block;
+}
+
