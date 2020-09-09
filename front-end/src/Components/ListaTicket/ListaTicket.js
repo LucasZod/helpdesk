@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import './listaTicket.css'
 import Cards from './Cards';
-import { getChamados, getSolicitacoes, patchChamado, deleteTicket, patchResponder } from '../../Requests/api';
+import { getChamados, getSolicitacoes, patchChamado, deleteTicket, patchResponder, pathAlterDate } from '../../Requests/api';
+import {DataFinalizada} from '../../Utils/Utils';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -27,6 +28,9 @@ const useStyles = makeStyles({
   paper: {
     marginBottom: 100,
     marginTop: 100
+  },
+  legenda:{
+    textAlign: "center",
   }
 });
 
@@ -46,6 +50,7 @@ export default function ListaTickets() {
   const [attData, setattData] = useState(false);
 
   const ADM = parseInt(localStorage.getItem('@Res'));
+  const idUser = parseInt(localStorage.getItem('@idHD'));
 
 
   const columns = [
@@ -137,12 +142,12 @@ export default function ListaTickets() {
     ))
 
     const chamado = date[0].chamado
-    const id_chamado = date[0].id_chamado
+    const id = date[0].id_chamado
     const login = date[0].login
     const dataprevista = date[0].dataprevista
-    const data = { chamado, id_chamado, login, dataprevista }
+    const data = { chamado, id, login, dataprevista }
     setObj(data)
-    console.log(data);
+   
 
     if (bAtt) { setbAtt(false) } else { setbAtt(true)}
    }
@@ -155,9 +160,37 @@ export default function ListaTickets() {
 
   const handlerPatchResponder = async () => {
     const { observacao_finalizada, id } = obj;
-    const data = {observacao_finalizada, id}
+    if(observacao_finalizada === "Em Aberto"){
+      alert('Você deve "Finalizar" seu chamado')
+      return;
+    }
+    let pergunta = window.confirm('Você deseja finalizar seu chamado?')
+    if(pergunta){
+    const data = {observacao_finalizada, id, data_finalizada: DataFinalizada(), id_responsavel:idUser}
     await patchResponder(data);
     window.location.reload()
+    }else{
+      return;
+    }
+  }
+
+  const handlerPatchData = async () =>{
+    const {dataprevista, id} = obj;
+    const qtdData = dataprevista.split('');
+    if(qtdData.length > 10 || qtdData.length <10){
+      alert('Formato de data inserido incorreto, format("dd/mm/aaaa")')
+      return;
+    }
+    
+    let dia = dataprevista.split("/")[0];
+    let mes = dataprevista.split("/")[1];
+    let ano = dataprevista.split("/")[2];
+    const d = `${ano}${mes}${dia}`
+    const newDate = parseInt(d);
+
+    const data = {dataprevista: newDate, id}
+    await pathAlterDate(data);
+    window.location.reload();
   }
 
   
@@ -172,7 +205,7 @@ export default function ListaTickets() {
    }
   }
 
-  console.log(lista);
+  
 
   const TabelaUser = () => (
     lista.length ?
@@ -251,7 +284,7 @@ export default function ListaTickets() {
       <aside className="lista-aside">
         {bAtt ? <TabelaUser /> : attDesc ?
           <Paper>
-            <p>Atualizar Descrição</p>
+            <p className={classes.legenda}>Atualizar Descrição</p>
             <FormGroup className={classes.inputField}>
               <p>ID Chamado</p>
               <TextField
@@ -295,7 +328,7 @@ export default function ListaTickets() {
           </Paper>
           : responder ?
           <Paper>
-            <p>Responder Chamado</p>
+            <p className={classes.legenda}>Responder Chamado</p>
             <FormGroup className={classes.inputField}>
               <p>ID Chamado</p>
               <TextField
@@ -318,19 +351,19 @@ export default function ListaTickets() {
                 value={obj.chamado}
                 multiline
                 disabled
-                rows={4}
-              />
-
-            <p>Resposta</p>
-              <TextField
-                align='center'
-                placeholder="Resposta"
-                value={obj.observacao_finalizada}
-                onChange={e => setObj({ ...obj, observacao_finalizada: e.target.value })}
-                multiline
                 rows={2}
               />
 
+            <p>Resposta</p>
+            <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={obj.observacao_finalizada}
+                onChange={e => setObj({ ...obj, observacao_finalizada: e.target.value })}
+              >
+                  <MenuItem value="Em Aberto">Em aberto</MenuItem>
+                  <MenuItem value="Finalizado">Finalizado</MenuItem>
+            </Select>
               <Button color='secondary' onClick={handlerPatchResponder}>Finalizar Chamado</Button>
               <Button onClick={() => { setbAtt(true) }}>Voltar</Button>
 
@@ -338,13 +371,13 @@ export default function ListaTickets() {
           </Paper>
         : attData ?
         <Paper>
-          <p>Atualizar Data</p>
+          <p className={classes.legenda}>Atualizar Data</p>
             <FormGroup className={classes.inputField}>
               <p>ID Chamado</p>
               <TextField
                 align='center'
                 placeholder="ID"
-                value={obj.id_chamado}
+                value={obj.id}
                 disabled
               />
               <p>Nome</p>
@@ -360,7 +393,7 @@ export default function ListaTickets() {
                 placeholder="Chamado"
                 value={obj.chamado}
                 multiline
-                rows={4}
+                rows={2}
                 disabled
               />
               <p>Data Prevista</p>
@@ -371,7 +404,7 @@ export default function ListaTickets() {
                 onChange={e => setObj({ ...obj, dataprevista: e.target.value })}
               />
 
-              <Button color='secondary'>Atualizar Data</Button>
+              <Button color='secondary' onClick={handlerPatchData}>Atualizar Data</Button>
               <Button onClick={() => { setbAtt(true) }}>Voltar</Button>
 
             </FormGroup>

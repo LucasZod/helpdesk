@@ -11,9 +11,9 @@ router.post('/',(req, res)=>{
 
         conn.query(
             `insert into tb_chamados(id_usuario, id_solicitacao, observacao, excluido, data_prevista, data_finalizada,
-                observacao_finalizada, informacao) VALUES(?,?,?,?,?,?,?,?)`,
+                observacao_finalizada, id_responsavel) VALUES(?,?,?,?,?,?,?,?)`,
                 [req.body.id_usuario, req.body.id_solicitacao, req.body.observacao, req.body.excluido, req.body.data_prevista,
-                req.body.data_finalizada, req.body.observacao_finalizada, req.body.informacao],
+                req.body.data_finalizada, req.body.observacao_finalizada, req.body.id_responsavel],
                 (error, resultado, field) =>{
                     conn.release();
                     
@@ -39,13 +39,14 @@ router.get('/:id_usuario', (req, res, next) => {
         const chave = parseInt(req.params.id_usuario);
         var myQuery = '';
         if(chave === 37){
-             myQuery = `SELECT CHA.id, US.login, DP.departamento, CHA.data_prevista, SOL.nome_solicitacao, CHA.observacao, SOL.id_sol, CHA.observacao_finalizada
+             myQuery = `SELECT CHA.id, US.login, DP.departamento, CHA.data_prevista, SOL.nome_solicitacao, CHA.observacao, SOL.id_sol, CHA.observacao_finalizada, CHA.data_finalizada 
             FROM tb_chamados as CHA
             LEFT JOIN tb_usuario as US ON CHA.id_usuario = US.id
             LEFT JOIN tb_departamento as DP ON US.departamento = DP.id
-            LEFT JOIN tb_solicitacao as SOL ON CHA.id_solicitacao = SOL.id_sol`
+            LEFT JOIN tb_solicitacao as SOL ON CHA.id_solicitacao = SOL.id_sol
+            WHERE CHA.observacao_finalizada <> "Finalizado"`
         }else{
-            myQuery = `SELECT CHA.id, US.login, DP.departamento, CHA.data_prevista, SOL.nome_solicitacao, CHA.observacao, SOL.id_sol, CHA.observacao_finalizada
+            myQuery = `SELECT CHA.id, US.login, DP.departamento, CHA.data_prevista, SOL.nome_solicitacao, CHA.observacao, SOL.id_sol, CHA.observacao_finalizada, CHA.data_finalizada
             FROM tb_chamados as CHA
             LEFT JOIN tb_usuario as US ON CHA.id_usuario = US.id
             LEFT JOIN tb_departamento as DP ON US.departamento = DP.id
@@ -77,6 +78,7 @@ router.get('/:id_usuario', (req, res, next) => {
                         departamento: items.departamento,
                         solicitacao: items.nome_solicitacao,
                         dataprevista: date(items.data_prevista),
+                        datafinalizada: date(items.data_finalizada),
                         chamado: items.observacao,
                         id_solicitacao: items.id_sol,
                         observacao_finalizada: items.observacao_finalizada
@@ -145,9 +147,33 @@ router.patch('/res', (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(
-            `UPDATE tb_chamados SET observacao_finalizada = ?  WHERE id = ?`,
+            `UPDATE tb_chamados SET observacao_finalizada = ?, data_finalizada = ?, id_responsavel = ?  WHERE id = ?`,
             [
                 req.body.observacao_finalizada,
+                req.body.data_finalizada,
+                req.body.id_responsavel,
+                req.body.id
+            ],
+            (error, resultado, fields) =>{
+                conn.release();
+                if (error) { return res.status(500).send({ error: error })}
+
+                return res.status(201).send({resposta: resultado})
+
+            }
+        )
+    })
+
+});
+
+router.patch('/date', (req, res, next) => {
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        conn.query(
+            `UPDATE tb_chamados SET data_prevista = ?  WHERE id = ?`,
+            [
+                req.body.dataprevista,
                 req.body.id
             ],
             (error, resultado, fields) =>{

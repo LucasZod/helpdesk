@@ -13,24 +13,13 @@ router.get('/', (req, res, next) => {
                 conn.release();
                 if (error) { return res.status(500).send({ error: error }) }
 
-                const date = (data) => {
-                    var dia = data.getDate();
-                    var mes = data.getMonth() + 1;
-                    var ano = data.getFullYear();
-             
-                    if(dia < 10){ dia = '0' + dia }
-                    if(mes < 10){ mes = '0' + mes }
-                    const dataCompleta = `${dia}/${mes}/${ano}`
-                    return dataCompleta;
-                 }
-
                 const result = {
                         resultadoFinal: resultado.map((sol)=>({
                             id: sol.id_sol,
                             nomesolicitacao: sol.nome_solicitacao,
                             observacao: sol.observacao,
-                            dt_created: date(sol.created_at),
-                            dt_updated: date(sol.update_at)
+                            dt_created: sol.created_at,
+                            dt_updated: sol.update_at
                         }))
                 }
 

@@ -17,7 +17,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import {getSolicitacoes, postSolicitacoes} from '../../Requests/api';
-import {date} from '../../Utils/Utils'
 
 
 function descendingComparator(a, b, orderBy) {
@@ -169,7 +168,7 @@ export default function Cadastro() {
     const [selected, setSelected] = React.useState([]);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
-    const [dados, setDados] = React.useState({nomesolicitacao: '', observacao: '', dt_created: '', dt_updated: ''})
+    const [dados, setDados] = React.useState({nomesolicitacao: '', observacao: ''})
     const [rows, setRows] = React.useState([])
 
     useEffect(()=>{
@@ -182,7 +181,7 @@ export default function Cadastro() {
 
     
 
-    const handlerCad = () =>{
+    const handlerCad = async() =>{
 
         if(!dados.nomesolicitacao || !dados.observacao){
             if(!dados.nomesolicitacao){
@@ -195,8 +194,10 @@ export default function Cadastro() {
         }
         
         else{
-            postSolicitacoes(dados);
+            await postSolicitacoes(dados);
             setRows([...rows, dados])
+            window.location.reload()
+            
         }  
     }
 
@@ -246,14 +247,14 @@ export default function Cadastro() {
                         className="formField"
                      
                         placeholder="Nome"
-                        onChange = {e => setDados({...dados, nomesolicitacao: e.target.value, dt_created: date()})}
+                        onChange = {e => setDados({...dados, nomesolicitacao: e.target.value})}
                         name = "nomesolicitacao"
                     />
                     <p>Observação</p>
                     <TextField
                         className="formField"
                         placeholder="Observação"
-                        onChange = {e => setDados({...dados, observacao: e.target.value, dt_created: date()})}
+                        onChange = {e => setDados({...dados, observacao: e.target.value})}
                         name = "observacao"
                     />
                     <Button color="primary" onClick={handlerCad}>Cadastrar</Button>

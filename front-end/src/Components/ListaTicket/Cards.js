@@ -38,7 +38,7 @@ export default function Cards({lista}) {
           {usuario}
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
-          Quantidade de chamados:
+          Total de chamados:
         </Typography>
         <Typography variant="h6" component="h2">
         {lista.length}

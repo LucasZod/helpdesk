@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Ticket() {
     const classes = useStyles();
     const [tickets, setTicket] = useState([]);
-    const [dados, setDados] = useState({solicitacao: '', descricao: '', informacao: ''});
+    const [dados, setDados] = useState({solicitacao: '', descricao: ''});
     const [solList, setSolList] = useState([]);
 
 
@@ -56,7 +56,7 @@ export default function Ticket() {
 
         setTicket([...tickets, dados])
         await postChamado(dados);
-        setDados({solicitacao: '', descricao: '', informacao: ''})
+        setDados({solicitacao: '', descricao: ''})
     }
 
 
@@ -76,15 +76,7 @@ export default function Ticket() {
                                     <MenuItem key={index} value={sol.id}>{sol.nomesolicitacao}</MenuItem>
                                 ))
                                 }
-                            </Select>
-                    {dados.solicitacao === 14 || dados.solicitacao === 15 ?
-                        <TextField
-                            id = 'standard-multiline-static'
-                            placeholder="Informação auxiliar"
-                            onChange={(e) => setDados({...dados, informacao: e.target.value})}
-                            value = {dados.informacao}
-                            name = 'informacao'
-                        /> : <div></div>}               
+                            </Select>            
                     <TextField
                         id = 'standard-multiline-static'
                         placeholder="Descrição"

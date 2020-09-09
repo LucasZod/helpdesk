@@ -1,5 +1,6 @@
 import axios from 'axios';
 import local from './local';
+import {DataPrev} from '../Utils/Utils'
 
 export async function getUsers() {
   try {
@@ -51,11 +52,12 @@ export async function postSolicitacoes(dados) {
 }
 
 export async function postChamado(dados) {
+  
   const id = parseInt(localStorage.getItem("@idHD"));
-  const { solicitacao, descricao, informacao } = dados;
+  const { solicitacao, descricao} = dados;
   const obj = {
-    id_usuario: id, id_solicitacao: solicitacao, observacao: descricao, excluido: 0, data_prevista: 0,
-    data_finalizada: 0, observacao_finalizada: "", informacao: informacao
+    id_usuario: id, id_solicitacao: solicitacao, observacao: descricao, excluido: 0, data_prevista: DataPrev(),
+    data_finalizada: 0, observacao_finalizada: "Em Aberto", id_responsavel: 0
   }
 
   console.log(obj);
@@ -95,6 +97,16 @@ export async function patchResponder(data){
   console.log(data);
   try{
     const response = await axios.patch(`${local}/chamados/res`,data);
+    console.log(response);
+  }catch(e){
+    console.log(e);
+  }
+}
+
+export async function pathAlterDate(data){
+  console.log(data);
+  try{
+    const response = await axios.patch(`${local}/chamados/date`, data);
     console.log(response);
   }catch(e){
     console.log(e);
