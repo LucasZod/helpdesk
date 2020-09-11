@@ -4,6 +4,7 @@
     border: 1px solid #ccc;
     background: whitesmoke;
     margin-bottom: 10px;
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.1);
 }
 
 .all-buttons{
@@ -11,22 +12,40 @@
 	background: whitesmoke;
 	text-align: center;
     font-size: 2em;
-    
+      
 }
 
 .botao-div{
     display: grid;
     justify-items: center;
     margin-left: 8px;
-    border: 1px solid #ccc;
     width: 150px;
     margin: 9px;
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.3);
+    cursor: pointer;
+    border: 1.5px solid #ccc;
 }
-.botao-div > p{
-    text-decoration: none;
-}
+
 
 .botao-div-oculto{
     display: block;
+}
+
+
+.header-dados{
+    display: flex;
+    height: 40px;
+    align-items: center;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    background: whitesmoke;
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.1);
+
+}
+
+.header-dados > h5{
+    margin-left: 5px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: darkslategray;
 }
 

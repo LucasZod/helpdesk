@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {Link} from 'react-router-dom'
 import './Botoes.css';
 import sol from '../../Assets/sol.bmp';
@@ -6,17 +6,28 @@ import aco from '../../Assets/aco.bmp';
 import lib from '../../Assets/lib.bmp';
 import cad from '../../Assets/cad.bmp';
 import sair from '../../Assets/sair.bmp';
+import {getDados} from '../../Requests/api';
 
 export default function Botoes(){
 
     const login_valid = localStorage.getItem('@usuarioHD');
+    const id = parseInt(localStorage.getItem('@idHD'));
+    const [data, setData] = useState([]);
+    
 
+    useEffect(()=>{
+        const GetData = async() =>{
+           const dados = await getDados(id);
+           setData(dados);
+        }
+        GetData();
+    },[id])
 
     const Buttons = [
         { id: "ac",  label: "Acompanhamento", vibilidade: parseInt(localStorage.getItem('@Aco')), link: '/lista-tickets', classe: 'all-buttons', src:aco},
         { id: "sl",  label: "Solicitacoes", vibilidade: parseInt(localStorage.getItem('@Sol')), link: '/ticket', classe: 'all-buttons', src:sol},
         { id: "cd",  label: "Cadastro", vibilidade: parseInt(localStorage.getItem('@Cad')), link: '/cadastro', classe: 'all-buttons', src:cad},
-        { id: "lb",  label: "Liberações", vibilidade: parseInt(localStorage.getItem('@Lib')), link: '/tickets', classe: 'all-buttons', src:lib},
+        { id: "lb",  label: "Liberações", vibilidade: parseInt(localStorage.getItem('@Lib')), link: '/liberacoes', classe: 'all-buttons', src:lib},
     ]
 
     const handlerLogout = (e) =>{
@@ -32,23 +43,30 @@ export default function Botoes(){
     }
 
     return(
-        
+        <div>
         <div className="container-botao">
             {   login_valid ?
                 Buttons.map((botao)=>(
-                <div className={botao.vibilidade === 0 ? 'botao-div' : 'botao-div-oculto'} key={botao.id}> 
-                <Link to = {botao.link}>
+                <Link to = {botao.link} style={{ textDecoration: 'none', color: 'black' }}key={botao.id}>
+                <div className={botao.vibilidade === 0 ? 'botao-div' : 'botao-div-oculto'} > 
                 <input className={botao.classe} hidden={botao.vibilidade} type="image" alt="image" src={botao.src}/>
-                </Link>
                 <p hidden={botao.vibilidade}>{botao.label}</p>
                 </div>
+                </Link>
             )) : <input hidden={1}/> }
             { login_valid ?
-                <div className="botao-div">
-                <input alt="img-2" onClick={handlerLogout} type="image" src={sair} width={68}/>
+                <div className="botao-div" onClick={handlerLogout}>
+                <input alt="img-2" type="image" src={sair} width={68}/>
                 <p>Logout</p>
                 </div>
             : <input hidden={1}/>} 
+        </div>
+            {data.map((dat, index)=>(
+                <div className="header-dados" key={index}>
+                    <h5>{dat.login}</h5>
+                    <h5>{dat.departamento}</h5>
+                </div>
+            ))}
         </div>
     );
 

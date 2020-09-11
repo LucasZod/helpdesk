@@ -1,0 +1,14 @@
+.container-index{
+    display: grid;
+    grid-template-areas: "section";
+    grid-template-rows: 60vh;
+    row-gap: 30px;
+}
+
+
+.section-index{
+    grid-area: section;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+}

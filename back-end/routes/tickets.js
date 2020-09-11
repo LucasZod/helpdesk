@@ -11,9 +11,9 @@ router.post('/',(req, res)=>{
 
         conn.query(
             `insert into tb_chamados(id_usuario, id_solicitacao, observacao, excluido, data_prevista, data_finalizada,
-                observacao_finalizada, id_responsavel) VALUES(?,?,?,?,?,?,?,?)`,
+                observacao_finalizada, id_responsavel, observacao_resposta) VALUES(?,?,?,?,?,?,?,?,?)`,
                 [req.body.id_usuario, req.body.id_solicitacao, req.body.observacao, req.body.excluido, req.body.data_prevista,
-                req.body.data_finalizada, req.body.observacao_finalizada, req.body.id_responsavel],
+                req.body.data_finalizada, req.body.observacao_finalizada, req.body.id_responsavel, req.body.observacao_resposta],
                 (error, resultado, field) =>{
                     conn.release();
                     
@@ -39,19 +39,22 @@ router.get('/:id_usuario', (req, res, next) => {
         const chave = parseInt(req.params.id_usuario);
         var myQuery = '';
         if(chave === 37){
-             myQuery = `SELECT CHA.id, US.login, DP.departamento, CHA.data_prevista, SOL.nome_solicitacao, CHA.observacao, SOL.id_sol, CHA.observacao_finalizada, CHA.data_finalizada 
+             myQuery = `SELECT CHA.id, US.login, DP.departamento, CHA.data_prevista, SOL.nome_solicitacao, CHA.observacao, SOL.id_sol, CHA.observacao_finalizada, CHA.data_finalizada,
+            CHA.observacao_resposta, CHA.excluido
             FROM tb_chamados as CHA
             LEFT JOIN tb_usuario as US ON CHA.id_usuario = US.id
             LEFT JOIN tb_departamento as DP ON US.departamento = DP.id
             LEFT JOIN tb_solicitacao as SOL ON CHA.id_solicitacao = SOL.id_sol
-            WHERE CHA.observacao_finalizada <> "Finalizado"`
+            WHERE CHA.excluido <> 1
+            `
         }else{
-            myQuery = `SELECT CHA.id, US.login, DP.departamento, CHA.data_prevista, SOL.nome_solicitacao, CHA.observacao, SOL.id_sol, CHA.observacao_finalizada, CHA.data_finalizada
+            myQuery = `SELECT CHA.id, US.login, DP.departamento, CHA.data_prevista, SOL.nome_solicitacao, CHA.observacao, SOL.id_sol, CHA.observacao_finalizada, CHA.data_finalizada,
+            CHA.observacao_resposta, CHA.excluido
             FROM tb_chamados as CHA
             LEFT JOIN tb_usuario as US ON CHA.id_usuario = US.id
             LEFT JOIN tb_departamento as DP ON US.departamento = DP.id
             LEFT JOIN tb_solicitacao as SOL ON CHA.id_solicitacao = SOL.id_sol
-            WHERE CHA.id_usuario = ?`
+            WHERE CHA.id_usuario = ? AND CHA.excluido <> 1`
         }
         conn.query(
             myQuery,
@@ -81,7 +84,8 @@ router.get('/:id_usuario', (req, res, next) => {
                         datafinalizada: date(items.data_finalizada),
                         chamado: items.observacao,
                         id_solicitacao: items.id_sol,
-                        observacao_finalizada: items.observacao_finalizada
+                        observacao_finalizada: items.observacao_finalizada,
+                        observacao_resposta: items.observacao_resposta
                      })       
                      )
                  }
@@ -147,11 +151,12 @@ router.patch('/res', (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(
-            `UPDATE tb_chamados SET observacao_finalizada = ?, data_finalizada = ?, id_responsavel = ?  WHERE id = ?`,
+            `UPDATE tb_chamados SET observacao_finalizada = ?, data_finalizada = ?, id_responsavel = ?, observacao_resposta = ?  WHERE id = ?`,
             [
                 req.body.observacao_finalizada,
                 req.body.data_finalizada,
                 req.body.id_responsavel,
+                req.body.observacao_resposta,
                 req.body.id
             ],
             (error, resultado, fields) =>{
@@ -206,5 +211,53 @@ router.delete('/:id', (req, res, next) => {
     })
 
 });
+
+
+router.patch('/ocultar', (req, res, next) => {
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        conn.query(
+            `UPDATE tb_chamados SET excluido = ? WHERE id = ?`,
+            [
+                req.body.excluido,
+                req.body.id
+            ],
+            (error, resultado, fields) =>{
+                conn.release();
+                if (error) { return res.status(500).send({ error: error })}
+
+                return res.status(201).send({resposta: resultado})
+
+            }
+        )
+    })
+
+});
+
+
+router.patch('/reabrir', (req, res, next) => {
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        conn.query(
+            `UPDATE tb_chamados SET observacao_finalizada = ? WHERE id = ?`,
+            [
+                req.body.observacao_finalizada,
+                req.body.id
+            ],
+            (error, resultado, fields) =>{
+                conn.release();
+                if (error) { return res.status(500).send({ error: error })}
+
+                return res.status(201).send({resposta: resultado})
+
+            }
+        )
+    })
+
+});
+
+
 
 module.exports = router;

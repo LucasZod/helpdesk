@@ -1,0 +1,38 @@
+.liberacao-container{
+
+    display: grid;
+    grid-template-areas:  "users check"
+                          "footer footer";
+    grid-template-rows: 60vh 10vh;
+    justify-content: center;
+    border: 1.5px solid #ccc;
+    background: whitesmoke;
+}
+
+.liberacao-users{
+    display: grid;
+    width: 400px;
+    grid-area: users;
+    justify-items: center;
+    align-items: center;
+}
+
+.liberacao-check{
+    display: grid;
+    width: 400px;
+    grid-area: check;
+    justify-items: center;
+    align-items: center;
+}
+
+.liberacao-footer{
+    display: grid;
+    grid-area: footer;
+    justify-items: center;
+    align-items: start;
+}
+
+p{
+    font-family: Arial, Helvetica, sans-serif;
+    color: darkslategray;
+}

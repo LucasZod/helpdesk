@@ -19,6 +19,10 @@ import Paper from '@material-ui/core/Paper';
 import {getSolicitacoes, postSolicitacoes} from '../../Requests/api';
 
 
+
+const Cad = parseInt(localStorage.getItem('@Cad'));
+
+
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
         return -1;
@@ -50,7 +54,6 @@ const headCells = [
     { id: 'observacao', numeric: true, disablePadding: false, label: 'Observação' },
     { id: 'dt_created ', numeric: true, disablePadding: false, label: 'Criado em' },
     { id: 'dt_updated', numeric: true, disablePadding: false, label: 'Atualizado em' },
-    { id: 'atualizar', numeric: true, disablePadding: false, label: 'Atualizar solicitação' },
 ];
 
 function EnhancedTableHead(props) {
@@ -162,6 +165,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Cadastro() {
 
+    if(Cad === 1) { window.location.pathname = '/index'}
+
     const classes = useStyles();
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
@@ -179,9 +184,14 @@ export default function Cadastro() {
         callApi();
     },[setRows])
 
+    console.log(rows);
     
 
     const handlerCad = async() =>{
+        if(Cad === 0){
+            alert('Você não tem permissão para esse módulo')
+            return;
+        }
 
         if(!dados.nomesolicitacao || !dados.observacao){
             if(!dados.nomesolicitacao){
@@ -201,13 +211,16 @@ export default function Cadastro() {
         }  
     }
 
-    const handlerRemove = (index) =>{
-        const newVetor = rows.filter((row)=>{
-            return row.nomesolicitacao !== index;
-        })
-        
-        setRows(newVetor)
-    }
+    // const handlerRemove = async (id) =>{
+    //     const newVetor = rows.filter((row)=>{
+    //         return row.id !== id;
+    //     })
+    //     setRows(newVetor)
+    //     const dados = {excluido: 1, id}
+
+    //     await pathSolicitacoes(dados)
+
+    // }
 
    
 
@@ -300,10 +313,6 @@ export default function Cadastro() {
                                                     <TableCell align="right">{row.observacao}</TableCell>
                                                     <TableCell align="right">{row.dt_created}</TableCell>
                                                     <TableCell align="right">{row.dt_updated}</TableCell>
-                                                    <TableCell align="right" onClick = {e => handlerRemove(row.nomesolicitacao)}>
-                                                        Atualizar
-                                                    </TableCell>
-
                                                 </TableRow>
                                             );
                                         })}

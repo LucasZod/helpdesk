@@ -13,6 +13,17 @@ export async function getUsers() {
 }
 
 
+export async function getDados(id){
+  console.log(id);
+  try{
+    const {data:{resposta}} = await axios.get(`${local}/usuarios/dados/${id}`)
+    return resposta;
+  }catch(e){
+    console.log(e);
+  }
+}
+
+
 export async function loginUser(logar) {
   await axios.post(`${local}/usuarios/login`, logar)
     .then(res => {
@@ -25,6 +36,7 @@ export async function loginUser(logar) {
     })
     .catch(error => {
       alert(error)
+      window.location.reload();
       return;
     })
 
@@ -51,13 +63,24 @@ export async function postSolicitacoes(dados) {
   }
 }
 
+export async function pathSolicitacoes(dados){
+  console.log(dados);
+  try{  
+    const response = await axios.patch(`${local}/solicitacoes/ocultar/`, dados);
+    console.log(response);
+  }catch(e){
+    console.log(e);
+  }
+
+}
+
 export async function postChamado(dados) {
   
   const id = parseInt(localStorage.getItem("@idHD"));
   const { solicitacao, descricao} = dados;
   const obj = {
     id_usuario: id, id_solicitacao: solicitacao, observacao: descricao, excluido: 0, data_prevista: DataPrev(),
-    data_finalizada: 0, observacao_finalizada: "Em Aberto", id_responsavel: 0
+    data_finalizada: 0, observacao_finalizada: "Em Aberto", id_responsavel: 0, observacao_resposta: ""
   }
 
   console.log(obj);
@@ -113,10 +136,31 @@ export async function pathAlterDate(data){
   }
 }
 
+export async function pathReabrir(data){
+  console.log(data);
+  try{
+    const response = await axios.patch(`${local}/chamados/reabrir`, data);
+    console.log(response);
+  }catch(e){
+    console.log(e);
+  }
+}
+
 
 export async function deleteTicket(id){
   try{
   const data = await axios.delete(`${local}/chamados/${id}`)
+  console.log(data);
+  }catch(e){
+   console.log(e);
+  }
+}
+
+
+export async function ocultarTicket(ocultar){
+  console.log(ocultar);
+  try{
+  const data = await axios.patch(`${local}/chamados/ocultar`, ocultar)
   console.log(data);
   }catch(e){
    console.log(e);
@@ -140,5 +184,27 @@ export async function liberacoesButtons(){
   }catch(e){
     console.log(e);
     return;
+  }
+}
+
+export async function liberacoesItems(id_usuario){
+  try{
+    const {data:{resposta}} = await axios.get(`${local}/liberacoes/${id_usuario}`);
+    return resposta;
+  }catch(e){
+    console.log(e);
+  }
+}
+
+export async function liberacoesItemsPatch(btn){
+
+  const {id, excluido} = btn;
+  const liberacoes = {id, excluido}
+  console.log(liberacoes);
+  try{
+    const data = await axios.patch(`${local}/liberacoes/`, liberacoes);
+    console.log(data);
+  }catch(e){
+    console.log(e);
   }
 }

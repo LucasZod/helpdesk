@@ -141,4 +141,25 @@ router.post('/teste', (req, res)=>{
 })
 
 
+router.get('/dados/:id', (req, res, next) => {
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        conn.query(
+            `SELECT USU.login, DEP.departamento
+            FROM tb_usuario as USU
+            LEFT JOIN tb_departamento as DEP ON USU.departamento = DEP.id
+            WHERE USU.id = ?`,
+            [req.params.id],
+            (error, resultado, fields) =>{
+                conn.release();
+                if (error) { return res.status(500).send({ error: error }) }
+                return res.status(200).send({resposta: resultado})
+
+            }
+        )
+    })
+});
+
+
 module.exports = router;

@@ -18,7 +18,12 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
+  const Sol = parseInt(localStorage.getItem('@Sol'));
+
 export default function Ticket() {
+
+    if(Sol === 1) { window.location.pathname = '/index'}
+
     const classes = useStyles();
     const [tickets, setTicket] = useState([]);
     const [dados, setDados] = useState({solicitacao: '', descricao: ''});

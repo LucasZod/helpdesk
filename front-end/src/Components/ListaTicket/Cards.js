@@ -20,12 +20,13 @@ const useStyles = makeStyles({
   },
   pos: {
     marginBottom: 12,
+    fontFamily: "Arial, Helvetica, sans-serif",
   },
 });
 
 const usuario = localStorage.getItem('@usuarioHD')
 
-export default function Cards({lista}) {
+export default function Cards({lista, chamadoFinalizado, chamadoAberto}) {
 
   const classes = useStyles();
   return (
@@ -38,16 +39,16 @@ export default function Cards({lista}) {
           {usuario}
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
-          Total de chamados:
+          Chamados em aberto:
         </Typography>
         <Typography variant="h6" component="h2">
-        {lista.length}
+        {chamadoAberto}
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
           Chamados encerrados:
         </Typography>
         <Typography variant="h6" component="h2">
-        0
+        {chamadoFinalizado}
         </Typography>
       </CardContent>
     </Card>

@@ -41,7 +41,7 @@ const log = async(e) =>{
     e.preventDefault()
     await loginUser(logar);
     await liberacoesButtons();
-    window.location.pathname = "/lista-tickets";
+    window.location.pathname = "/index";
     
 }
 

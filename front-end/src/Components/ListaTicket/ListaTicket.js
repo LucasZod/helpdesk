@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './listaTicket.css'
 import Cards from './Cards';
-import { getChamados, getSolicitacoes, patchChamado, deleteTicket, patchResponder, pathAlterDate } from '../../Requests/api';
+import { getChamados, getSolicitacoes, patchChamado, patchResponder, pathAlterDate, ocultarTicket, pathReabrir } from '../../Requests/api';
 import {DataFinalizada} from '../../Utils/Utils';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -31,7 +31,10 @@ const useStyles = makeStyles({
   },
   legenda:{
     textAlign: "center",
-  }
+  },
+  table: {
+    minWidth: 750,
+  },
 });
 
 
@@ -48,23 +51,30 @@ export default function ListaTickets() {
   const [responder, setResponder] = useState(false);
   const [attDesc, setAttDesc] = useState(false);
   const [attData, setattData] = useState(false);
+  const [totais, setTotais] = useState({chamadosFinalizados: '', chamadosAbertos: ''})
 
   const ADM = parseInt(localStorage.getItem('@Res'));
   const idUser = parseInt(localStorage.getItem('@idHD'));
+  const AttUser = parseInt(localStorage.getItem('@Atu'));
+  const ExcUser = parseInt(localStorage.getItem('@Exc'));
 
 
   const columns = [
-    { id: 'id_chamado', label: 'ID', minWidth: 50 },
-    { id: 'login', label: 'Nome Solicitante', minWidth: 140 },
-    { id: 'departamento', label: 'Departamento', minWidth: 170, align: 'right', format: (value) => value.toLocaleString('pt-BR') },
-    { id: 'dataprevista', label: 'Data Prevista', minWidth: 88, align: 'right', format: (value) => value.toLocaleString('pt-BR') },
-    { id: 'solicitacao', label: 'Solicitação', minWidth: 170, align: 'center' },
-    { id: 'chamado', label: 'Chamado', minWidth: 170, align: 'center' },
+    { id: 'id_chamado', label: 'ID', minWidth: "auto" },
+    { id: 'login', label: 'Nome Solicitante', minWidth: "auto" },
+    { id: 'departamento', label: 'Departamento', minWidth: "auto", align: 'right', format: (value) => value.toLocaleString('pt-BR') },
+    { id: 'dataprevista', label: 'Data Prevista', minWidth: "auto", align: 'right', format: (value) => value.toLocaleString('pt-BR') },
+    { id: 'solicitacao', label: 'Solicitação', minWidth: "auto", align: 'center' },
+    ADM === 1 ?
+    { id: 'reschamado', label: 'Resposta Chamado', minWidth: "auto", align: 'center' }
+    :
+    { id: 'chamado', label: 'Chamado', minWidth: "auto", align: 'center' },
+    { id: 'status', label: 'Status', minWidth: "auto", align: 'center' },
     ADM === 1 ? 
-    { id: 'atualizar', label: 'Atualizar', minWidth: 100, align: 'center' }
+    { id: 'atualizar', label: 'Atualizar', minWidth: "auto", align: 'center' }
     : 
-    { id: 'responder', label: 'Responder', minWidth: 100, align: 'center' },
-    { id: 'deletar', label: 'Opções', minWidth: 100, align: 'center' }
+    { id: 'responder', label: 'Responder', minWidth: "auto", align: 'center' },
+    { id: 'deletar', label: 'Opções', minWidth: "auto", align: 'center' }
 
   ]
 
@@ -81,13 +91,17 @@ export default function ListaTickets() {
 
     const getApi = async () => {
       const chamados = await getChamados();
-
-      setLista(chamados)
+      var chamadoFinalizado = chamados.filter((list)=>(list.observacao_finalizada !== 'Em Aberto')).length
+      var chamadoAberto = chamados.filter((list)=>(list.observacao_finalizada !== 'Finalizado' )).length
+      setTotais({chamadosFinalizados: chamadoFinalizado, chamadosAbertos: chamadoAberto})
+      if(ADM === 0){
+        setLista(chamados)
+      }else if(ADM === 1){
+        setLista(chamados)
+      }
     }
     getApi();
-  }, [obj])
-
-
+  }, [ADM])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -99,12 +113,23 @@ export default function ListaTickets() {
   };
 
   const handlerbAtt = (index) => {
+
+    if(AttUser === 1){
+      alert('Você não tem permissão para atualizar!');
+      return;
+    }
+
     setAttDesc(true);
     setResponder(false)
     setattData(false)
     const att = lista.filter((list) => (
       list.id_chamado === index
     ))
+
+    if(att[0].observacao_finalizada === "Finalizado") {
+       alert('O chamado já foi finalizado!') 
+       return;
+    }
 
     const chamado = att[0].chamado
     const id_chamado = att[0].id_chamado
@@ -117,7 +142,8 @@ export default function ListaTickets() {
     if (bAtt) { setbAtt(false) } else { setbAtt(true) }
   }
 
-  const handlerResponder = (index) => {
+
+  const handlerResponder = async(index) => {
     setResponder(true);
     setattData(false);
     const res = lista.filter((list) => (
@@ -128,7 +154,18 @@ export default function ListaTickets() {
     const id = res[0].id_chamado
     const login = res[0].login
     const observacao_finalizada = res[0].observacao_finalizada
-    const data = { chamado, id, login, observacao_finalizada }
+    const observacao_resposta = res[0].observacao_resposta
+    if(observacao_finalizada === "Finalizado"){
+      const pergunta = window.confirm('Você deseja reabrir o chamado?')
+        if(pergunta){
+          const data = {observacao_finalizada: "Em Aberto", id:id}
+          await pathReabrir(data);
+          window.location.reload();
+        }else{
+          return;
+        }
+    }
+    const data = { chamado, id, login, observacao_finalizada, observacao_resposta }
     setObj(data)
     if (bAtt) { setbAtt(false) } else { setbAtt(true)}
   }
@@ -145,6 +182,11 @@ export default function ListaTickets() {
     const id = date[0].id_chamado
     const login = date[0].login
     const dataprevista = date[0].dataprevista
+    const observacao_finalizada = date[0].observacao_finalizada
+    if(observacao_finalizada === "Finalizado"){
+      alert('O chamado já foi finalizado!')
+      return;
+    }
     const data = { chamado, id, login, dataprevista }
     setObj(data)
    
@@ -159,14 +201,14 @@ export default function ListaTickets() {
   }
 
   const handlerPatchResponder = async () => {
-    const { observacao_finalizada, id } = obj;
+    const { observacao_finalizada, id, observacao_resposta } = obj;
     if(observacao_finalizada === "Em Aberto"){
       alert('Você deve "Finalizar" seu chamado')
       return;
     }
     let pergunta = window.confirm('Você deseja finalizar seu chamado?')
     if(pergunta){
-    const data = {observacao_finalizada, id, data_finalizada: DataFinalizada(), id_responsavel:idUser}
+    const data = {observacao_finalizada, id, data_finalizada: DataFinalizada(), id_responsavel:idUser, observacao_resposta}
     await patchResponder(data);
     window.location.reload()
     }else{
@@ -193,25 +235,54 @@ export default function ListaTickets() {
     window.location.reload();
   }
 
-  
+  //--------------DELETAR DO BANCO-----------------------------------
+  // const handlerDelete = async(index) =>{                                
+  //   if(ExcUser === 1){
+  //     alert('Você não tem permissão para excluir!')
+  //     return;
+  //   }
+
+  //   const del = lista.filter((list)=>(list.id_chamado === index));
+
+  //   if(del[0].observacao_finalizada === 'Finalizado'){
+  //     alert('Você não pode excluir chamados finalizados!')
+  //     return;
+  //   }--------------------------------------------------------------
+
   const handlerDelete = async(index) =>{
+    if(ExcUser === 1){
+      alert('Você não tem permissão para excluir!')
+      return;
+    }
+   const obs = lista.filter(item => item.id_chamado === index)
+
+   if (obs[0].observacao_finalizada === "Finalizado"){
+     alert('Você não pode excluir chamados finalizados!')
+     return;
+   }
+
    var pergunta = window.confirm('Deseja excluir esse chamado?');
    if(pergunta){
    const newList = lista.filter(item => item.id_chamado !== index)
    setLista(newList);
-   await deleteTicket(index);
+   const ocultar = {excluido: 1, id: index}
+   await ocultarTicket(ocultar)
    }else{
      return;
    }
   }
 
-  
 
   const TabelaUser = () => (
     lista.length ?
       <Paper className={classes.paper} elevation={5}>
         <TableContainer className={classes.container}>
-          <Table size='small' >
+          <Table
+          className={classes.table} 
+          size='small'
+          aria-label="enhanced table"
+          aria-labelledby="tableTitle"
+           >
             <TableHead>
               <TableRow>
                 {columns.map((column) => (
@@ -239,14 +310,21 @@ export default function ListaTickets() {
                     <TableCell align='right'>{row.departamento}</TableCell>
                     <TableCell align='right'>{row.dataprevista}</TableCell>
                     <TableCell align='center'>{row.solicitacao}</TableCell>
+                    {ADM === 1 ?
+                    <TableCell align='center'>{row.observacao_resposta}</TableCell>
+                    :
                     <TableCell align='center'>{row.chamado}</TableCell>
+                    }
+                    <TableCell align='center'>{row.observacao_finalizada}</TableCell>
                     {ADM === 1 ?
                        <TableCell align='right' onClick={e => handlerbAtt(row.id_chamado)}>
                              <Button color='primary'>Atualizar</Button>
                        </TableCell>
                       :
                       <TableCell align='right' onClick={e => handlerResponder(row.id_chamado)}>
-                        <Button color='secondary'>Responder</Button>
+                        <Button color={row.observacao_finalizada === 'Em Aberto' ? 'secondary' : 'primary'}>
+                          {row.observacao_finalizada === 'Em Aberto' ? "Responder" : "Reabrir"}
+                          </Button>
                       </TableCell>                    
                     }
                     {ADM === 1 ?
@@ -273,13 +351,13 @@ export default function ListaTickets() {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
-      : <h1>Sem Dados</h1>
+      : <h1>Não há chamados a ser listado</h1>
   )
 
   return (
     <div className="content-lista">
       <section className="lista-section">
-        <Cards lista={lista} />
+        <Cards lista={lista} chamadoFinalizado={totais.chamadosFinalizados} chamadoAberto={totais.chamadosAbertos} />
       </section>
       <aside className="lista-aside">
         {bAtt ? <TabelaUser /> : attDesc ?
@@ -353,8 +431,16 @@ export default function ListaTickets() {
                 disabled
                 rows={2}
               />
-
-            <p>Resposta</p>
+              <p>Resposta</p>
+              <TextField
+                align='center'
+                placeholder="Resposta"
+                value={obj.observacao_resposta}
+                onChange = {e => setObj({...obj, observacao_resposta: e.target.value})}
+                multiline
+                rows={2}
+              />
+            <p>Status</p>
             <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"

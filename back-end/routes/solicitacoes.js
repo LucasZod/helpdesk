@@ -8,7 +8,7 @@ router.get('/', (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(
-            'SELECT * FROM tb_solicitacao',
+            'SELECT * FROM tb_solicitacao WHERE excluido <> 1',
             (error, resultado, fields) =>{
                 conn.release();
                 if (error) { return res.status(500).send({ error: error }) }
@@ -52,6 +52,32 @@ router.post('/', (req, res, next) => {
         )
     })
 });
+
+
+router.patch('/ocultar/', (req, res, next) => {
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        conn.query(
+            `UPDATE tb_solicitacao
+              SET excluido = ?
+              WHERE id_sol     = ?`,
+            [
+                req.body.excluido,
+                req.body.id
+            ],
+            (error, resultado, fields) =>{
+                conn.release();
+                if (error) { return res.status(500).send({ error: error })}
+
+                return res.status(201).send({resposta: resultado})
+
+            }
+        )
+    })
+
+});
+
+
 
 
 module.exports = router;

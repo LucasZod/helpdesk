@@ -10,8 +10,8 @@
 .lista-section{
     grid-area:section;
     background: whitesmoke;
-    display: flex;
-    justify-content: center;
+    display: grid;
+    justify-items: center;
     border: 1.5px solid #ccc;
 }
 
@@ -19,13 +19,7 @@
     grid-area:aside;
     background: whitesmoke;
     display: grid;
-    justify-content: center;
+    justify-items: center;
     border: 1.5px solid #ccc;
 }
 
-.lista-final{
-    grid-area:final;
-    background: whitesmoke;
-    display: grid;
-    justify-content: center;
-}

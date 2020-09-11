@@ -40,3 +40,12 @@ export function date(){
    const dataCompleta = parseInt(`${ano}${mes}${dia}`);
    return dataCompleta;
 }
+
+
+export function VerificarPermissao(Pag, Perm){
+
+   if(Pag === "@Cad" && Perm === 1){
+      window.location.pathname = "/index"
+   }
+
+}
