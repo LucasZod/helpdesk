@@ -198,8 +198,6 @@ export default function Cadastro() {
     },[setRows])
 
 
-   
-    
     const handlerCad = async() =>{
         if(Cad === 1){
             alert('Você não tem permissão para esse módulo')

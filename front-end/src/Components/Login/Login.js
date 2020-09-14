@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     }
   }));
 
-export default function Login(){
+export default function Login(){ 
 const classes = useStyles();
 const [logar, setLogin] = useState(
     {
@@ -46,7 +46,7 @@ const log = async(e) =>{
 return(
     <div className = "container-login">
         <div className = "form-items">
-        <form className={classes.root} noValidate autoComplete="off">
+        <form className={classes.root} noValidate >
         <TextField className={classes.inputitems}
         id="outlined-basic 1"
         variant="outlined"
