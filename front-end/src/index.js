@@ -9,7 +9,6 @@ import Botoes from './Components/Botoes/Botoes'
 import Liberacoes from './Components/Liberacoes/Liberacoes'
 import Index from './Components/Index/Index'
 
-
 ReactDOM.render(
 <BrowserRouter>
      <Botoes/>

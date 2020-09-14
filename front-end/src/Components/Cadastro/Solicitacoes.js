@@ -16,12 +16,7 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import {getSolicitacoes, postSolicitacoes} from '../../Requests/api';
-
-
-
-const Cad = parseInt(localStorage.getItem('@Cad'));
-
+import {getSolicitacoes, postSolicitacoes, liberacoesButtons} from '../../Requests/api';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -165,8 +160,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Cadastro() {
 
-    if(Cad === 1) { window.location.pathname = '/index'}
-
+    const idUser = parseInt(localStorage.getItem('@idHD'));
+    if(!idUser) { window.location.pathname = '/'}
+    
     const classes = useStyles();
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
@@ -175,6 +171,23 @@ export default function Cadastro() {
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [dados, setDados] = React.useState({nomesolicitacao: '', observacao: ''})
     const [rows, setRows] = React.useState([])
+    const [modulo, setModulo] = React.useState([])
+
+    useEffect(()=>{
+        const getModules = async () =>{
+            const modules = await liberacoesButtons();
+            const objMod = {}
+            console.log(modules);
+            modules.map((module)=>{
+                return objMod[module.nome_botao] = module.excluido
+            })
+            setModulo(objMod);
+        }
+        getModules();
+    },[setModulo])
+
+    const Cad = modulo['Cadastro de solicitações'];
+    if(Cad === 1) { window.location.pathname = '/index'}
 
     useEffect(()=>{
         const callApi = async () =>{
@@ -184,21 +197,21 @@ export default function Cadastro() {
         callApi();
     },[setRows])
 
-    console.log(rows);
-    
 
+   
+    
     const handlerCad = async() =>{
-        if(Cad === 0){
+        if(Cad === 1){
             alert('Você não tem permissão para esse módulo')
             return;
         }
 
         if(!dados.nomesolicitacao || !dados.observacao){
             if(!dados.nomesolicitacao){
-                console.log('Não há solicitação');
+                alert('Não há solicitação');
             }
             if(!dados.observacao){
-                console.log('Não há observações');
+                alert('Não há observações');
             }
             return;
         }

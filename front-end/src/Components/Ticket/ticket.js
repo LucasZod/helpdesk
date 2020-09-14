@@ -5,7 +5,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import {getSolicitacoes, postChamado} from '../../Requests/api';
+import {getSolicitacoes, postChamado, liberacoesButtons} from '../../Requests/api';
 import { TextField, FormGroup, Button } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
@@ -18,17 +18,30 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-  const Sol = parseInt(localStorage.getItem('@Sol'));
-
 export default function Ticket() {
-
-    if(Sol === 1) { window.location.pathname = '/index'}
 
     const classes = useStyles();
     const [tickets, setTicket] = useState([]);
     const [dados, setDados] = useState({solicitacao: '', descricao: ''});
-    const [solList, setSolList] = useState([]);
+    const [solList, setSolList] = useState([])
+    const [modulo, setModulo] = useState([])
 
+    useEffect(()=>{
+        const getModules = async () =>{
+            const modules = await liberacoesButtons();
+            const objMod = {}
+            modules.map((module)=>{
+                return objMod[module.nome_botao] = module.excluido
+            })
+            setModulo(objMod);
+        }
+        getModules();
+    },[setModulo])
+
+    const Sol = modulo['Solicitações'];
+    if(Sol === 1) { window.location.pathname = '/index'}
+    const idUser = parseInt(localStorage.getItem('@idHD'));
+    if(!idUser) { window.location.pathname = '/'}
 
     useEffect(() => {
         const userAut = () => {

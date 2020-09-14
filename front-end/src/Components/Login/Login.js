@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {loginUser, liberacoesButtons} from '../../Requests/api';
+import {loginUser} from '../../Requests/api';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -17,9 +17,7 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 export default function Login(){
-
 const classes = useStyles();
-
 const [logar, setLogin] = useState(
     {
         login: "",
@@ -30,20 +28,20 @@ const [logar, setLogin] = useState(
 useEffect(()=>{
     const userAut = () => {
         const user = localStorage.getItem('@usuarioHD');
-        if (user) { window.location.href = '/index' }
+        if (user) { window.location.href = '/lista-tickets' }
     }
     userAut();
 })
+
 
 
 const log = async(e) =>{
     
     e.preventDefault()
     await loginUser(logar);
-    await liberacoesButtons();
-    window.location.pathname = "/index";
-    
+    window.location.pathname = "/lista-tickets";
 }
+
 
 return(
     <div className = "container-login">
@@ -64,7 +62,7 @@ return(
         onChange = {e => setLogin({...logar, senha: e.target.value})}
         type = "password"
         />
-        <Button type="submit" variant="contained" color="primary" className = "botao" onClick={log}>Logar</Button>
+        <Button variant="contained" color="primary" className = "botao" onClick={log}>Logar</Button>
         
         </form>
         </div>

@@ -14,7 +14,6 @@ export async function getUsers() {
 
 
 export async function getDados(id){
-  console.log(id);
   try{
     const {data:{resposta}} = await axios.get(`${local}/usuarios/dados/${id}`)
     return resposta;
@@ -171,17 +170,17 @@ export async function ocultarTicket(ocultar){
 
 export async function liberacoesButtons(){
   const idUser = parseInt(localStorage.getItem('@idHD'));
-  console.log(idUser);
   try{
     const {data:{resposta}} = await axios.post(`${local}/liberacoes`, {id: idUser});
-    localStorage.setItem('@S/A', resposta[0].excluido);
-    localStorage.setItem('@Sol', resposta[1].excluido);
-    localStorage.setItem('@Aco', resposta[2].excluido);
-    localStorage.setItem('@Lib', resposta[3].excluido);
-    localStorage.setItem('@Cad', resposta[4].excluido);
-    localStorage.setItem('@Res', resposta[5].excluido);
-    localStorage.setItem('@Atu', resposta[6].excluido);
-    localStorage.setItem('@Exc', resposta[7].excluido);
+    // localStorage.setItem('@S/A', resposta[0].excluido);
+    // localStorage.setItem('@Sol', resposta[1].excluido);
+    // localStorage.setItem('@Aco', resposta[2].excluido);
+    // localStorage.setItem('@Lib', resposta[3].excluido);
+    // localStorage.setItem('@Cad', resposta[4].excluido);
+    // localStorage.setItem('@Res', resposta[5].excluido);
+    // localStorage.setItem('@Atu', resposta[6].excluido);
+    // localStorage.setItem('@Exc', resposta[7].excluido);
+    return resposta;
   }catch(e){
     console.log(e);
     return;

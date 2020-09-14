@@ -5,7 +5,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import List from '@material-ui/core/List';
 import Checkbox from '@material-ui/core/Checkbox';
-import {getUsers, liberacoesItems, liberacoesItemsPatch} from '../../Requests/api';
+import {getUsers, liberacoesItems, liberacoesItemsPatch, liberacoesButtons} from '../../Requests/api';
 import {Button} from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
@@ -18,18 +18,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Lib = parseInt(localStorage.getItem('@Lib'));
-
-
 export default function Liberacoes(){
 
-    if(Lib === 1) { window.location.pathname = '/index'}
+    const idUser = parseInt(localStorage.getItem('@idHD'));
+    if(!idUser) { window.location.pathname = '/'}
 
     const classes = useStyles();
     const [users, setUsers] = useState([]);
     const [liberacoes, setLiberacoes] = useState([]);
     const [checked, setChecked] = React.useState([]);
     const [botoes, setBotoes] = React.useState([]);
+    const [modulo, setModulo] = useState([])
+
+    useEffect(()=>{
+        const getModules = async () =>{
+            const modules = await liberacoesButtons();
+            const objMod = {}
+            modules.map((module)=>{
+                return objMod[module.nome_botao] = module.excluido
+            })
+            setModulo(objMod);
+        }
+        getModules();
+    },[setModulo])
 
     useEffect(()=>{
 
@@ -41,6 +52,9 @@ export default function Liberacoes(){
         usersApi();
     },[setUsers])
 
+
+    const Lib = modulo['Liberações'];
+    if(Lib === 1) { window.location.pathname = '/index'}
     
     const handlerClick = async(id_usuario) =>{
         await liberacoesItems(id_usuario).then(res => setLiberacoes(res));
@@ -86,7 +100,6 @@ export default function Liberacoes(){
         })
         window.location.reload();
         }
-        console.log(users);
 
 
    const RenderUser = () => (

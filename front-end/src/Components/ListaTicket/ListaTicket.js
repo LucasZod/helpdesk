@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './listaTicket.css'
 import Cards from './Cards';
-import { getChamados, getSolicitacoes, patchChamado, patchResponder, pathAlterDate, ocultarTicket, pathReabrir } from '../../Requests/api';
+import { getChamados, getSolicitacoes, patchChamado, patchResponder, pathAlterDate, ocultarTicket, pathReabrir, liberacoesButtons } from '../../Requests/api';
 import {DataFinalizada} from '../../Utils/Utils';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -52,11 +52,26 @@ export default function ListaTickets() {
   const [attDesc, setAttDesc] = useState(false);
   const [attData, setattData] = useState(false);
   const [totais, setTotais] = useState({chamadosFinalizados: '', chamadosAbertos: ''})
+  const [modulo, setModulo] = useState([])
 
-  const ADM = parseInt(localStorage.getItem('@Res'));
+    useEffect(()=>{
+        const getModules = async () =>{
+            const modules = await liberacoesButtons();
+            const objMod = {}
+            modules.map((module)=>{
+                return objMod[module.nome_botao] = module.excluido
+            })
+            setModulo(objMod);
+        }
+        getModules();
+    },[setModulo])
+
+
+  const ADM = modulo['Responder']
   const idUser = parseInt(localStorage.getItem('@idHD'));
-  const AttUser = parseInt(localStorage.getItem('@Atu'));
-  const ExcUser = parseInt(localStorage.getItem('@Exc'));
+  if(!idUser) { window.location.pathname = '/'}
+  const AttUser = modulo['Atualizar']
+  const ExcUser = modulo['Excluir']
 
 
   const columns = [

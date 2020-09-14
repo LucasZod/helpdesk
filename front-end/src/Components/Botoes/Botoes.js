@@ -6,28 +6,38 @@ import aco from '../../Assets/aco.bmp';
 import lib from '../../Assets/lib.bmp';
 import cad from '../../Assets/cad.bmp';
 import sair from '../../Assets/sair.bmp';
-import {getDados} from '../../Requests/api';
+import {getDados, liberacoesButtons} from '../../Requests/api';
 
 export default function Botoes(){
 
     const login_valid = localStorage.getItem('@usuarioHD');
     const id = parseInt(localStorage.getItem('@idHD'));
     const [data, setData] = useState([]);
-    
+    const [modulo, setModulo] = useState([])
 
     useEffect(()=>{
         const GetData = async() =>{
            const dados = await getDados(id);
            setData(dados);
         }
+        const getModules = async () =>{
+            const modules = await liberacoesButtons();
+            const objMod = {}
+            modules.map((module)=>{
+                return objMod[module.nome_botao] = module.excluido
+            })
+            setModulo(objMod);
+        }
         GetData();
+        getModules();
     },[id])
 
+
     const Buttons = [
-        { id: "ac",  label: "Acompanhamento", vibilidade: parseInt(localStorage.getItem('@Aco')), link: '/lista-tickets', classe: 'all-buttons', src:aco},
-        { id: "sl",  label: "Solicitacoes", vibilidade: parseInt(localStorage.getItem('@Sol')), link: '/ticket', classe: 'all-buttons', src:sol},
-        { id: "cd",  label: "Cadastro", vibilidade: parseInt(localStorage.getItem('@Cad')), link: '/cadastro', classe: 'all-buttons', src:cad},
-        { id: "lb",  label: "Liberações", vibilidade: parseInt(localStorage.getItem('@Lib')), link: '/liberacoes', classe: 'all-buttons', src:lib},
+        { id: "ac",  label: "Acompanhamento", vibilidade: modulo['Acompanhamento'], link: '/lista-tickets', classe: 'all-buttons', src:aco},
+        { id: "sl",  label: "Solicitacoes", vibilidade: modulo['Solicitações'], link: '/ticket', classe: 'all-buttons', src:sol},
+        { id: "cd",  label: "Cadastro", vibilidade: modulo['Cadastro de solicitações'], link: '/cadastro', classe: 'all-buttons', src:cad},
+        { id: "lb",  label: "Liberações", vibilidade: modulo['Liberações'], link: '/liberacoes', classe: 'all-buttons', src:lib},
     ]
 
     const handlerLogout = (e) =>{
