@@ -35,7 +35,8 @@ export async function loginUser(logar) {
       }
     })
     .catch(error => {
-      alert(error)
+      console.log(error);
+      alert('Usuario ou senha incorreta')
       window.location.reload();
       return;
     })

@@ -86,15 +86,17 @@ export default function Liberacoes(){
         })
         window.location.reload();
         }
-        
+        console.log(users);
 
 
    const RenderUser = () => (
-        users.map((user)=>(
-        <ListItem button key={user.id} onClick={e=>{handlerClick(user.id)}}>
+        users.map((user)=>{
+            return(
+        <ListItem button aria-checked={true} key={user.id} onClick={e=>{handlerClick(user.id)}}>
             <ListItemText primary={user.login} />
         </ListItem>
-      )))
+            );
+        }))
 
   const RenderLib = () => (
     liberacoes.map((liberacao)=>(

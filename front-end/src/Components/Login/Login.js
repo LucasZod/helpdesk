@@ -30,7 +30,7 @@ const [logar, setLogin] = useState(
 useEffect(()=>{
     const userAut = () => {
         const user = localStorage.getItem('@usuarioHD');
-        if (user) { window.location.href = '/lista-tickets' }
+        if (user) { window.location.href = '/index' }
     }
     userAut();
 })
@@ -64,7 +64,7 @@ return(
         onChange = {e => setLogin({...logar, senha: e.target.value})}
         type = "password"
         />
-        <Button variant="contained" color="primary" className = "botao" onClick={log}>Logar</Button>
+        <Button type="submit" variant="contained" color="primary" className = "botao" onClick={log}>Logar</Button>
         
         </form>
         </div>

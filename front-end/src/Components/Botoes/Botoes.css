@@ -21,7 +21,7 @@
     margin-left: 8px;
     width: 150px;
     margin: 9px;
-    box-shadow: 5px 5px 5px rgba(0,0,0,0.3);
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.5);
     cursor: pointer;
     border: 1.5px solid #ccc;
 }

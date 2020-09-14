@@ -252,7 +252,7 @@ export default function Cadastro() {
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
     return (
-        <div className="container">
+        <div className="container-solicitacao">
             <Paper className={classes.paper} elevation={6}>
                 <FormGroup className="formGroup">
                     <p>Solicitação</p>
